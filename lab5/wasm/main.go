@@ -8,6 +8,7 @@ import (
 
 func CheckPrime(this js.Value, args []js.Value) interface{} {
 	// TODO: Check if the number is prime
+	//
 	// Retrieve input value from the HTML input element
 	input := js.Global().Get("document").Call("getElementById", "value").Get("value").String()
 
