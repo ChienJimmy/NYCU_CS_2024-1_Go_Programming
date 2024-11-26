@@ -8,6 +8,7 @@ import (
 
 var doorStatus string
 var handStatus string
+
 var mutex sync.Mutex
 
 func hand() {
