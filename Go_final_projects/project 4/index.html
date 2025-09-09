@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zinc ID Selector</title>
+</head>
+<body>
+    <h1>Zinc ID Selector</h1>
+
+    <!-- 如果處於首頁頁面，顯示表單 -->
+    <div id="formContainer">
+        <form action="/process" method="POST">
+            <div id="conditions">
+                <div class="condition">
+                    <label>logP:</label>
+                    <select name="logP[]">
+                        <option value="A">-1</option>
+                        <option value="B">0</option>
+                        <option value="C">1</option>
+                        <option value="D">2</option>
+                        <option value="E">2.5</option>
+                        <option value="F">3</option>
+                        <option value="G">3.5</option>
+                        <option value="H">4</option>
+                        <option value="I">4.5</option>
+                        <option value="J">5</option>
+                        <option value="K">>5</option>
+                    </select>
+                    <label>Molecular Weight:</label>
+                    <select name="molecularWeight[]">
+                        <option value="A">200</option>
+                        <option value="B">250</option>
+                        <option value="C">300</option>
+                        <option value="D">325</option>
+                        <option value="E">350</option>
+                        <option value="F">375</option>
+                        <option value="G">400</option>
+                        <option value="H">425</option>
+                        <option value="I">450</option>
+                        <option value="J">500</option>
+                        <option value="K">>500</option>
+                    </select>
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity[]" min="1" required>
+                </div>
+            </div>
+            <button type="button" onclick="addCondition()">Add Condition</button>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- 如果處於完成頁面，顯示抓取完成訊息和返回首頁的按鈕 -->
+    <div id="completionMessage" style="display:none;">
+        <h2>Selection Completed!</h2>
+        <p>The Zinc IDs have been successfully selected and saved to the file.</p>
+        <a href="/output/zinc_ids.txt" download>Download the result (zinc_ids.txt)</a>
+        <br><br>
+        <button onclick="goBack()">Back to Homepage</button>
+    </div>
+
+    <script>
+        // 顯示結果頁面並隱藏表單
+        function showCompletion() {
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('completionMessage').style.display = 'block';
+        }
+
+        // 返回首頁
+        function goBack() {
+            window.location.href = '/';
+        }
+
+        // 只顯示一個表單
+        function addCondition() {
+            const condition = document.querySelector('.condition');
+            const clone = condition.cloneNode(true);
+            document.getElementById('conditions').appendChild(clone);
+        }
+
+        // 如果處於process頁面，顯示完成頁面
+        window.onload = function() {
+            if (window.location.pathname === "/process") {
+                showCompletion(); // 顯示完成訊息
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZINC20 数据抓取</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group select, .form-group input {
+            padding: 5px;
+            font-size: 14px;
+            width: 200px;
+        }
+        .form-group button {
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+        .condition {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .condition h3 {
+            margin-top: 0;
+        }
+        .condition button {
+            background-color: #f44336;
+        }
+        .condition button:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ZINC20 数据抓取</h1>
+
+    <form action="/fetch" method="POST">
+        <!-- 条件组容器 -->
+        <div id="conditionsContainer">
+            <div class="condition" id="condition0">
+                <h3>条件 1</h3>
+                <div class="form-group">
+                    <label for="logp0">LogP:</label>
+                    <select name="logp1" id="logp0" required>
+                        <option value="-1">-1</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="2.5">2.5</option>
+                        <option value="3">3</option>
+                        <option value="3.5">3.5</option>
+                        <option value="4">4</option>
+                        <option value="4.5">4.5</option>
+                        <option value="5">5</option>
+                        <option value=">5">>5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="molecularweight0">Molecular Weight:</label>
+                    <select name="molecularweight1" id="molecularweight0" required>
+                        <option value="200">200</option>
+                        <option value="250">250</option>
+                        <option value="300">300</option>
+                        <option value="325">325</option>
+                        <option value="350">350</option>
+                        <option value="375">375</option>
+                        <option value="400">400</option>
+                        <option value="425">425</option>
+                        <option value="450">450</option>
+                        <option value="500">500</option>
+                        <option value=">500">>500</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity0">数量:</label>
+                    <input type="number" name="quantity1" id="quantity0" min="1" placeholder="输入数量" required>
+                </div>
+
+                <button type="button" onclick="removeCondition(0)">移除条件</button>
+            </div>
+        </div>
+
+        <button type="button" id="addConditionButton">添加条件</button>
+
+        <br><br>
+
+        <button type="submit">提交并抓取数据</button>
+    </form>
+
+    <div id="resultContainer">
+        <h3>{{.Message}}</h3>
+        <ul>
+            {{range .Conditions}}
+                <li>
+                    <strong>条件: LogP={{.LogP}}, Molecular Weight={{.MolecularWeight}}, 数量={{.Quantity}}</strong><br>
+                    ZINC ID:<br>
+                    <ul>
+                    {{range .ZincIDs}}
+                        <li>{{.}}</li>
+                    {{end}}
+                    </ul>
+                </li>
+            {{end}}
+        </ul>
+    </div>
+</div>
+
+<script>
+    let conditionCount = 1;
+
+    // 添加条件
+    document.getElementById("addConditionButton").onclick = function() {
+        if (conditionCount < 5) {
+            const newConditionId = conditionCount;
+            const container = document.getElementById("conditionsContainer");
+
+            const newCondition = document.createElement("div");
+            newCondition.className = "condition";
+            newCondition.id = "condition" + newConditionId;
+
+            newCondition.innerHTML = `
+                <h3>条件 ${newConditionId + 1}</h3>
+                <div class="form-group">
+                    <label for="logp${newConditionId}">LogP:</label>
+                    <select name="logp${newConditionId + 1}" id="logp${newConditionId}" required>
+                        <option value="-1">-1</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="2.5">2.5</option>
+                        <option value="3">3</option>
+                        <option value="3.5">3.5</option>
+                        <option value="4">4</option>
+                        <option value="4.5">4.5</option>
+                        <option value="5">5</option>
+                        <option value=">5">>5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="molecularweight${newConditionId}">Molecular Weight:</label>
+                    <select name="molecularweight${newConditionId + 1}" id="molecularweight${newConditionId}" required>
+                        <option value="200">200</option>
+                        <option value="250">250</option>
+                        <option value="300">300</option>
+                        <option value="325">325</option>
+                        <option value="350">350</option>
+                        <option value="375">375</option>
+                        <option value="400">400</option>
+                        <option value="425">425</option>
+                        <option value="450">450</option>
+                        <option value="500">500</option>
+                        <option value=">500">>500</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity${newConditionId}">数量:</label>
+                    <input type="number" name="quantity${newConditionId + 1}" id="quantity${newConditionId}" min="1" placeholder="输入数量" required>
+                </div>
+
+                <button type="button" onclick="removeCondition(${newConditionId})">移除条件</button>
+            `;
+            container.appendChild(newCondition);
+            conditionCount++;
+        }
+    };
+
+    // 移除条件
+    function removeCondition(id) {
+        const conditionElement = document.getElementById("condition" + id);
+        conditionElement.remove();
+        conditionCount--;
+    }
+</script>
+
+</body>
+</html>
